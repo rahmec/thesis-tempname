@@ -1,0 +1,35 @@
+In Leon's algorithms, we need to find all codewords having some weight $w$.
+Using a generic ISD algorithm, this would have a cost which, on average, is given by
+$$\ln\big(A_w^*\big)\cdot T_{\mathsf{ISD}}.$$
+We describe how to improve upon this bound.
+
+\subsection{Stern with memory}
+
+\begin{algorithm}[ht]
+\KwIn{$\6H\in\mathbb F_2^{r\times n}$, $w\in\mathbb N$, $A^*_w\in\mathbb N$}
+\KwOut{$\mathcal L = \mathcal C_w$}
+\vspace{2mm}
+$\mathcal L = \varnothing$\;
+\While{$|\mathcal L|<A^*_w$}{
+Sample $\pi\xleftarrow{\$}S_n$\;
+Set $\mathtt{ok} = 1$\;
+\For{$\6c\in \mathcal L$}{
+\If{$f\big(\pi(\6c)\big) = 1$}{
+$\mathtt{ok} = 0$\;
+}
+}
+\If{$\mathtt{ok} = 1$}{
+$X' = \mathsf{FindCodewords}(\pi(\6H), w)$\;
+\For{$\6c\in X'$}{
+Update $\mathcal L$ as $\mathcal L \cup \pi^{-1}(\6c)$\;
+}
+}
+}
+\caption{ISD with memory}
+\label{alg:isd_memory}
+\end{algorithm}
+
+We consider the case of Stern's ISD.
+For the first codeword, we face a complexity given by
+$$T^{(1)} = \frac{T_{\mathsf{ISD}}(w)}{A_w^*}.$$
+Now, we need to consider the number of permutations

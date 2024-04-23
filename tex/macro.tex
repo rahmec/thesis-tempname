@@ -1,0 +1,137 @@
+\usepackage{xcolor}
+
+\newcommand{\ep}[1] {\textcolor{blue}{Edo: #1}}
+\newcommand{\rev}[1] {\textcolor{red}{#1}}
+
+\usepackage{amsfonts,amsmath,amssymb,amsthm}
+\usepackage{setspace}
+\usepackage[noend]{algpseudocode}
+%\usepackage{algorithm}
+%\usepackage{algorithmicx}
+\usepackage{xspace}
+\usepackage{comment}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{algorithmicx}
+
+
+\newcommand{\F}{\mathbb{F}_2}
+\newcommand{\Fq}{\mathbb{F}_q}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\jc}[1]{{\color{red}\textbf{JCD}: \textit{#1}}}
+\newcommand{\code}{\mathscr C}
+
+\newcommand{\dgv}{\ensuremath{d_{GV}}}
+
+\newcommand{\wt}{\mathrm{wt}}
+\newcommand{\etal}{\emph{et al.}\xspace}
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\lar}{\stackrel{\mathdollar}{\leftarrow}}
+\newcommand{\sk}{\ensuremath{\mathsf{sk}}\xspace}
+\newcommand{\pk}{\ensuremath{\mathsf{pk}}\xspace}
+\newcommand{\accept}{\ensuremath{\mathsf{Accept}}\xspace}
+\newcommand{\reject}{\ensuremath{\mathsf{Reject}}\xspace}
+\newcommand{\WRH}{\textsf{WRH}}
+\newcommand{\6}{\mathbf}
+\newcommand{\prob}[1]{\mathrm{Pr}\left[#1\right]}
+\newcommand{\supp}{\mathrm{Supp}}
+
+
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+\usepackage{url}
+
+\usepackage{mathrsfs}
+
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+
+\usepackage{calligra}
+%\newcommand{\distrib}{{\small{\text{\calligra{S} }}}}
+\newcommand{\distrib}{\mathcal{U} }
+\newcommand{\unif}{{\small{\text{\calligra{U} }}}}
+\newcommand{\bernoulli}{{\small{\text{\calligra{B} }}}}
+\newcommand{\ldpc}{{\small{\text{\calligra{L} }}}}
+\newcommand{\1}[1]{{\mathcalboondox{#1} }}
+\newcommand{\isd}{\mathcal{ISD}}
+
+
+
+\DeclareFontFamily{U}{BOONDOX-calo}{\skewchar\font=45 }
+\DeclareFontShape{U}{BOONDOX-calo}{m}{n}{
+  <-> s*[1.05] BOONDOX-r-calo}{}
+\DeclareFontShape{U}{BOONDOX-calo}{b}{n}{
+  <-> s*[1.05] BOONDOX-b-calo}{}
+\DeclareMathAlphabet{\mathcalboondox}{U}{BOONDOX-calo}{m}{n}
+\SetMathAlphabet{\mathcalboondox}{bold}{U}{BOONDOX-calo}{b}{n}
+\DeclareMathAlphabet{\mathbcalboondox}{U}{BOONDOX-calo}{b}{n}
+
+\usepackage{scalerel}
+
+
+\usepackage[linesnumbered, ruled, noend]{algorithm2e}
+
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+
+\usepackage{tikz}
+
+\tikzset{
+  symbol/.style={
+    draw=none,
+    every to/.append style={
+      edge node={node [sloped, allow upside down, auto=false]{$#1$}}}
+  }
+}
+
+\usepackage{tikzit, tikz-cd, tkz-graph}
+\usepackage{tikz}
+
+\tikzset{
+  symbol/.style={
+    draw=none,
+    every to/.append style={
+      edge node={node [sloped, allow upside down, auto=false]{$#1$}}}
+  }
+}
+
+\newcommand{\functionFive}[5]{%
+  \begin{tikzcd}[
+    column sep=2em,
+    row sep=0ex,
+    ampersand replacement=\&
+  ]
+  #1\colon \&[-3em]
+  #2\vphantom{#3} \arrow[r] \&
+  #3\vphantom{#2} \\
+  \&
+  #4\vphantom{#5} \arrow[r,mapsto] \&
+  #5\vphantom{#4}
+  \end{tikzcd}%
+}
+
+\newcommand{\functionTwo}[7]{%
+  \begin{tikzcd}[
+    column sep=2em,
+    row sep=0ex,
+    ampersand replacement=\&
+  ]
+  #1\colon \&[-3em]
+  #2\vphantom{#3} \arrow[r] \&
+  #3\vphantom{#4} \arrow[r] \&
+  #4\vphantom{#3} \\
+  \&
+  #5\vphantom{#6} \arrow[r,mapsto] \&
+  #6\vphantom{#7} \arrow[r,mapsto] \&
+  #7\vphantom{#6}
+  \end{tikzcd}%
+}
+
+
+\usepackage{amsmath}
+\usepackage{mleftright}

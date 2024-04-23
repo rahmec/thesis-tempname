@@ -1,0 +1,53 @@
+We describe how we can improve the cost of the estimator.
+Basically, we propose to modify the Stern $\mathsf{Solve}$ subroutine.
+Namely, instead of using the full Hamming sphere of vectors with weight $p$ and length $\frac{k+\ell}{2}$, we propose to use only a randomly selected subset of the sphere.
+In other words, we assume that each list in Stern's algorithm has size
+$$L = \chi |S_{\frac{k+\ell}{2}, p}|,$$
+where $\chi$ is some constant that we will determine in the following.
+To have amortized lists, we will choose $q^\ell = L$, leading to
+$$\ell = \log_q(\chi)+\log_q(|S_{\frac{k+\ell}{2},p}|) = \log_q(\chi)+\frac{k+\ell}{2}h_q\left(\frac{2p}{k+\ell}\right),$$
+where $h_q:\mathbb [0 ; 1]\rightarrow [0 ; 1]$ is the $q$-ary entropy function.
+Let $\ell = \psi n$, where $\psi \in [0 ; 1-R]$, and $\rho = p/n$.
+We notice that 
+$h_q\left(\frac{2p}{k+\ell}\right) = h_q\left(\frac{}{}\right)$
+So far we have provided a very high level description of our idea. In the following we adapt it in the context of Stern algorithm.
+
+\subsection{Using Stern for counting codewords}
+In this section we describe a new approach for counting the number of codewords of a given weight $w$. Since we are working with a collision search approach, we need to take into account three main factors:
+\begin{itemize}
+    \item \textit{initial permutation}: we must consider that we are able to represent only the solutions that allow a splitting as in (\emph{\textcolor{red}{inserire una breve discussione sul collision search}}).
+    This can be estimated by first obtaining the probability that the initial permutation is valid for a specific codeword. We can compute this probability simply by counting, given a $w$-codeword, how many ways can one break it into blocks of length $n'/2$ such that each block has weight $p/2$. This leads to the following probability:
+    \begin{equation}
+    P_\pi(p) = \frac{\binom{n/2}{p/2}^{2}\binom{n-n'}{w-p}}{\binom{n}{w}}.
+    \end{equation}
+    Since we assume to start from $N_{\mathcal{C}(w)}$ solutions for the initial instance, the number of codewords that get mapped into solutions for the small instance is $$N' = N_{\mathcal{C}(w)} P_\pi(a,p);$$
+    \item \textit{starting with lists of size $<L$}: remember that, as a degree of freedom, we can have $X<L$. 
+    So, we have to consider also that each initial list contains the corresponding split of $\6c'$.
+    That is, we want to consider the probability that $\6x^{(0)}_j\in\mathcal E_j^{(0)}$, for all $j$.
+    It is easy to see that, for any $j$, it holds that
+    \begin{equation}
+    \mathrm{Pr}\left[\6x^{(0)}_j\in \mathcal E_j^{(0)}\right] = \frac{X}{L} = \frac{X}{\binom{n/2}{p/2}(q-1)^{p/2}}.
+    \end{equation}
+    So, the probability that a solution is indeed enumerated, in the initial lists, is
+    \begin{align}
+    P_{\mathcal E}(p) = \frac{X^{2}}{\binom{n/2}{p/2}^{2}(q-1)^p}.
+    \end{align}
+    \item \textit{partial sums}: in every level, we need to guess some partial sums.
+    All the solutions such that the considered splitting does not correspond to the desired partial sums will be filtered out.
+    Let us consider that, for each of the $X$ solutions, to produce level $i$ we need to guess correctly $2^{a-i}-1$ partial sums.
+    So, the probability that the considered partial sums are valid, for a solution, is
+    \begin{align*}
+    P_{\sf{Guess}}(m,a) = \prod_{i = 1}^{a-1}q^{-m\big(2^{a-i}-1\big)} = q^{-m(2^a-a-1)}.
+    \end{align*}
+    Because of amortized lists, we have $q^m = X$, so that
+    $$P_{\sf{Guess}}(m,a) = X^{-(2^a-a-1)} = 2^{-\chi(2^a-a-1)n}.$$
+\end{itemize}
+On average, the number of solutions we produce is
+\begin{align}
+M &\nonumber = N_{\mathcal{C}}(w) \cdot P_\pi(a,p)\cdot P_{\mathcal E}(a,p,\chi)\cdot P_{\sf{Guess}}(m,a)\\\nonumber
+& = N_{\mathcal{C}}(w) \frac{X^{2}\binom{n-n'}{w-p}}{\binom{n}{w}(q-1)^p}.
+\end{align}
+Since we can estimate $M$ simply by executing the algorithm, we can consequently find an estimate for the number of codewords of weight $w$, obtaining:
+\begin{equation}
+    N_{\mathcal{C}}(w) = M \cdot \frac{\binom{n}{w}(q-1)^p}{X^{2}\binom{n-n'}{w-p}}.
+\end{equation}

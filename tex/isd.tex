@@ -1,0 +1,144 @@
+In this section we formalize the operating procedure of ISD algorithms.
+We first consider a high level and general description, which encompasses all algorithms of this family; this modelization will turn useful, in the following sections, when we will study the best performances we can achieve, when this type of algorithms is employed to estimate the weight distribution of a linear code.
+
+\subsection{ISD in a nutshell}
+By $\mathsf{ISD}$, we refer to a randomized algorithm
+\begin{equation*}
+    \functionFive{\text{ISD}}{\mathbb{F}_q^{r \times n} \times \{0,\ldots,n\}}{\mathscr{P}(\mathscr{C}_w),}{(\6H, w)}{X.}
+\end{equation*}
+The algorithm receives as input a description for the code (say, a parity-check matrix $\6H$) and the desired weight $w$, and returns an element $X$ in the powerset of $\mathscr{C}_w$, i.e. a set of codewords with weight $w$.
+All ISD algorithms share a common procedure which is highlighted in Algorithm \ref{alg:isd_general}.
+In particular, the operations performed by any ISD algorithm can be divided into three main steps:
+\begin{itemize}
+\item[-] \textit{Partial Gaussian Elimination}:
+a random permutation $\pi$ of length $n$ is sampled (line 2 in the algorithm)
+Then, Partial Gaussian Elimination (PGE) with parameter $\ell\in\mathbb N$, $1\leq \ell \leq n-k$ is performed.
+In other words, one checks whether it is possible to apply a change of basis on the permuted parity-check matrix $\pi(\6H)\in\mathbb F_q^{r\times n}$, so that a fmatrix with the following structure is obtained
+$$
+\left(
+\begin{array}{c|c}
+  \6A\in\mathbb F_q^{\ell\times(k+\ell)}& \60\in\mathbb F_q^{\ell\times(n-k-\ell))}\\\hline
+\6B\in\mathbb F_q^{(n-k-\ell)\times(k+\ell)} & \6I_{n-k-\ell}
+\end{array}
+\right).
+$$
+Notice that such a matrix is not guaranteed to exist: indeed, if the leftmost $k+\ell$ columns of $\pi(\6H)$ form a matrix whose rank is $<k$, then PGE cannot be performed.
+In these cases, a new permutation is sampled.
+\item[-] \textit{Solving the small instance}: 
+%notice that, because of the permutation, the set of weight-$w$ codewords we can determine is $\pi(\mathscr C_w)$, which obviously has the same size of $\mathscr C_w$.
+%To find these codewords, one first solve the so-called small instance.
+because of the PGE decomposition, we have 
+\begin{equation}
+\label{eq:small}
+\6c = (\6c', \6c'')\in\pi(\mathscr C)\iff\begin{cases}\6A\6c'^\top = 0,\\
+\6B\6c'^\top+\6c''^\top = \60.
+\end{cases}
+\end{equation}
+Notice that $\6c'$ has length $k+\ell$ and is, de facto, a codeword of the code whose parity-check matrix is $\6A$.
+One restricts the search for $\6c'$ by requiring that it has some (low) weight and some specific weight partition.
+Notice that this is the only step that varies from one ISD algorithm to the other;
+\item[-] \textit{Producing solutions}: once $\6c'$ has been found, one can easily compute the associated $\6c''$ from the second row of the linear system in \eqref{eq:small}.
+In other words, we produce codewords of the form $(\6c', \6c'')$ and check whether they have the desired weight $w$: any such codeword corresponds to the permutation of a codeword in $\mathscr C_w$.
+%This is exactly what instruction 6--10 do.
+\end{itemize}
+\begin{algorithm}[ht]
+\KwData{subroutine $\mathsf{Solve}$, parameter $\ell\in\mathbb N$, $1\leq \ell\leq r$}
+\KwIn{$\6H\in\mathbb F_2^{r\times n}$, $w\in\mathbb N$}
+\KwOut{set $Y \subseteq \mathscr C_w$}
+\vspace{0.5em}
+\tcp{Apply random permutation and do PGE}
+\Repeat{\emph{PGE is successful}}{
+\text{Sample $\pi\xleftarrow{\$}S_n$}\; 
+Apply PGE on $\pi(\6H)$\;
+%Apply, if it exists, non singular $\6S\in\mathbb F_q^{r\times r}$ such that 
+%$$\6S\pi(\6H') = \begin{pmatrix}\6A\in\mathbb F_q^{\ell\times (k+\ell)} & \60\in \mathbb F_q^{\ell\times (n-k-\ell)} \\\6F\in\mathbb F_q^{(n-k-\ell)\times (k+\ell)} & \6I_{n-k-\ell}\in\mathbb F_q^{u\times u}\end{pmatrix}$$\\
+}
+
+\vspace{0.5em}
+\tcp{Use a subroutine to find solutions for the small instance}
+$X = \mathsf{Solve}(\6A, \ell)$\; 
+%\tcp{Use a subroutine to produce codewords}
+\vspace{0.5em}
+\tcp{Test codewords associated to solutions for the small instance}
+Set $Y = \varnothing$\;
+\For{$\6c'\in X$}{
+Compute $\6c'' = -\6c'\6B^\top$\;
+\If{$\mathrm{wt}(\6c')+\mathrm{wt}(\6c'') == w$}{
+Update $Y\gets Y\cup \left\{\pi^{-1}\big((\6c0, \6c'')\big)\right\}$\;
+}
+}
+\Return $Y$\;
+
+\caption{ISD operating principle}
+\label{alg:isd_general}
+\end{algorithm}
+
+This is a very general way to study ISD algorithms, but allows to identify the main quantities we will use for our analysis.
+%Any ISD algorithm varies in how the function $g_{\text{ISD}, \pi}$ is chosen and how the subroutine $\mathsf{FindCodewords}$ is executed.
+%In particular, the function $g_{\text{ISD}, \pi}$ will recognize only the matrices with a particular structure, e.g. the last $k$ columns are independent.
+Notice that, at this stage, we have provided all the necessary details apart from those of the subroutine $\mathsf{Solve}$.
+Yet, its functioning is crucial to determine the computational cost of an ISD algorithm.
+For the moment, we keep it as a very general procedure and, to be as general as possible, consider that it will only return the codewords in $\pi(\mathscr C_w)$ that satisfy some constrains, e.g., some specific weight partition.
+In the following, we will denote by $f_{\mathsf{ISD}, \pi}: \mathbb F_q^{k+\ell} \longrightarrow \{0 , 1\}$ such a constraint, and assume that, whenever $f_{\text{ISD}, \pi}(\6c')$ is equal to 1, this means that the codeword $\6c'$ will be among the outputs of the subroutine.
+%\begin{remark}
+%One can further generalize ISD so that, even if $f(\6c) = 1$, the codeword $\6c$ is returned with some probability $<1$. For the moment, to avoid burdening the notation, we do not consider this further generalization.
+%\end{remark}
+Crucial quantities in our analysis will be the success probability and the average number of codewords found for each iteration. We first focus on the success probability, namely, the probability that a given permutation $\pi$ is successful for an ISD algorithm. In particular, we show that, as long as we do not consider a specific code, the probability that a chosen permutation is valid will only be a function of $(i)$ the weight $w$, and $(ii)$ the constraints which are imposed by the considered ISD variant.
+
+
+For what concerns the time complexity of each iteration, we can use the following estimate.
+\begin{proposition}\textbf{Cost of one iteration}\\
+On average, one iteration of ISD uses a number of elementary operations (sums and multiplications) over $\mathbb F_q$ counted by
+$$O\left(\frac{n(n-k+\ell)^2}{p_{\mathsf{inv}}(\ell)}+\mathbb E[t_{\mathsf{Solve}}]+\mathbb E[|X|]\right),$$
+where $p_{\mathsf{inv}}(\ell) = \prod_{i = \ell+1}^{n-k}1-q^{-i}$, $t_{\mathsf{Solve}}(\ell)$ is the cost of the subroutine $\mathsf{Solve}$ (as a function of $\ell$) and $|X|$ is the number of solutions which are found, for the small instance.
+\end{proposition}
+\begin{IEEEproof}
+Performing PGE requires a number of operations which is well counted by $n(n-k+\ell)^2$ (for instance, see \cite{peters2010information}).
+The number of times we need to repeated the PGE step, on average, corresponds to the reciprocal of the probability that the chosen permutation $\pi$ places, on the rightmost side of $\pi(\6H)$, $n-k-\ell$ columns which form a basis for a space with dimension $\ell$.
+Assuming that all columns of $\6H$ behave as random vectors over $\mathbb F_q$, with length $n-k$, we get that this probability is
+\begin{align*}
+p_{\mathsf{inv}}(\ell) & = \prod_{i = 0}^{n-k-\ell-1}\left(1-\frac{q^i}{q^{n-k}}\right)\\\nonumber
+& = \prod_{i = 0}^{n-k-\ell-1}\left(1 - q^{-(n-k-i)}\right)= \prod_{i = \ell+1}^{n-k}\left(1 - q^{-i}\right).
+\end{align*}
+\end{IEEEproof}
+\begin{remark}
+The term $O\left(\mathbb E[|X|]\right)$ is slightly optimistic, since we are omitting some polynomial factors.
+Indeed, executing instructions 8--9 requires to i) compute  $-\6c'\6B^\top$, and ii) check Hamming weights.
+With a schoolbook approach, the calculation of $\6c'\6B^\top$ would require $O\left((k+\ell)^2(n-k-\ell)\right)$ operations.
+Yet, given that, generically, $\6c'$ has low weight and that some precomputations can be used, this cost can be drastically reduced.
+Also, in practice, one can perform the check on the weight on-the-run: this technique is called early abort and, most of the times, allows to stop the computation of $\6c''$ all its $n-k-\ell$ entries are obtained.
+In the end, we expect that the cost of instructions 8--10 is very limited and can be safely neglected, so that the overall cost of instructions 7--10 corresponds to $O\left(\mathbb E[|X|]\right)$, i.e., to the average number of performed iterations.
+\end{remark}
+%The aforementioned formula points out that the time complexity depends on several parameters, such as the type of algorithm and its setting, the value of $w$ and the properties of the considered code.
+
+\subsection{Lee\&Brickell and Stern's algorithms}
+
+Details of Lee\&Brickell ISD are reported in Appendix A.
+\begin{proposition}\textbf{Performances of Lee\&Brickell's ISD}\\
+The time complexity of the Lee\&Brickell $\mathsf{Solve}$ subroutine, with parameter $p\in\mathbb N$, $0\leq p \leq \min\{w , k\}$, is
+\begin{align*}
+t_{\sf{Solve}}(p) &\nonumber = \binom{k}{p}(q-1)^p.
+\end{align*}
+The probability that a codeword $\6c\in \mathscr C_w$ is returned is
+\begin{equation*}
+p_{\sf{ISD}}(w) = \frac{\binom{k}{p}\binom{n-k}{w-p}}{\binom{n}{w}}.
+\end{equation*}
+\end{proposition}
+
+Details about Stern's ISD are reported in Appendix B.
+\begin{proposition}\textbf{Performances of Stern's ISD}\\
+The time complexity of the Stern's $\mathsf{Solve}$ subroutine, with parameters $p,\ell\in\mathbb N$, where $0\leq p\leq \left\lfloor\frac{k+\ell}{2}\right\rfloor$, $0\leq \ell \leq n-k$ \textcolor{blue}{[generalizzare questi bound per qualsiasi valore di $w$ (anche quelli grandi)]} is \begin{align*}
+t_{\sf{Solve}}(p,\ell) &\nonumber = L^2/q^{\ell}+L,
+\end{align*}
+where $L = \binom{\frac{k+\ell}{2}}{p}(q-1)^p$.
+The probability that a codeword $\6c\in\mathscr C_w$ is returned is 
+%\begin{equation}p_{\sf{S}}^*(w) = 1-\left(1-p_{\sf{S}}(w)\right)^{N_{\mathscr C}(w)},\label{eq:prob}\end{equation}
+\begin{equation}
+p_{\sf{ISD}}(w) = \frac{\binom{(k+\ell)/2}{p}^2 \binom{n-k-\ell}{w-2p}}{\binom{n}{w}}.
+    \label{eq:probRound}
+    \end{equation}
+\end{proposition}
+
+Notice that, at least for the binary case, more advanced algorithms exist (e.g., MMT \cite{may2011decoding} and BJMM \cite{becker2012decoding}).
+However, they have space complexity (i.e., amount of used memory) which is typically much larger than that of Stern.
+Also, they do not have a non binary counterpart: so, to avoid distinguishing between the binary and non binary cases, we will omit them from our analysis.

@@ -1,0 +1,69 @@
+\subsection{Mathematical notation}
+
+As usual, we denote with $\mathbb F_q$ the finite field with $q$ elements.
+Given a set $\mathscr A$, its cardinality (i.e., its number of elements) is indicated as $|\mathscr A|$.
+We use bold capital letters to denote matrices, and small capital letters to denote vectors.
+The operator $(\cdot)^\top$ denotes the transposition operation, while the null matrix is indicated as $\60$ (its dimensions will always be clear from the context).
+For a vector $\6a$, we use $\mathrm{wt}(\6a)$ to denote its Hamming weight, that is, the number of non null coordinates.
+The Hamming sphere with radius $w$ is the set of all vectors with length $n$ and weight $w$ and is indicated as $\mathscr S_{n,w}$. When clear from the context, we will simplify this notation as $\mathscr{S}_w$.
+We will use $\mathscr P_n$ to indicate the group of length-$n$ permutations: if $\pi \in \mathscr P_n$ and $\6a = (a_1,\cdots,a_n)$, we have $\pi(\6a) = \big(a_{\pi(1)},\cdots,a_{\pi(n)}\big)$.
+%If $\1{A}$ is a distribution, then we write $x\sim \1{A}$ if $x$ is a random variable distributed according to $\1{A}$.
+For an event $\mathsf{Event}$, we write $\mathbb{P}\left[\mathsf{Event}\right]$ to denote the probability that $\mathsf{Event}$ happens. 
+If $X$ is a random variable, we use $\mathbb E[X]$ to indicate its mean value.
+We also recall the following version of Chernoff's bound \cite{doerr2020probabilistic}, which we will use to estimate the confidence interval of our estimator.
+
+\begin{theorem}[\textbf{Two-sided Chernoff's bound}]
+\label{the:chernoff}
+Let $X_1,\ldots,X_t$ be independent random variables, $0\leq X_i\leq 1$ for each $i$. Let $X = \sum_{i = 1}^t X_i$, and $\mu = \sum_{i = 1}^t\mathbb E[X_i]$.
+Then, for any $\varepsilon \in [0,1]$, we have
+$$\mathbb P\left[|X-\mu|\geq \varepsilon \mu\right]\leq 2 e^{-\frac{ \mu \varepsilon^2}{3}}.$$
+\end{theorem}
+%For a set $A$, we use ${U}(A)$ to denote the uniform distribution over $A$.
+We write $x\xleftarrow{\$}A$ to express that $x$ is sampled uniformly at random from $A$, that is, $x$ is distributed according to the uniform distribution over  $A$.
+Finally, we define $\mathscr I_{n,w}$ as the ensemble of all subsets of $\{1,\ldots,n\}$ with size $w$.
+
+\subsection{Coding theory background}
+
+
+%In this paper we employ a somehow unusual definition for linear codes, which however will be rather useful for our treatment. 
+%Given a full rank matrix $\6H\in\mathbb F_2^{r\times n}$, with $r\leq n$, we define the associated code as
+%$$C(\6H) = \left\{\left.\6c\in\mathbb F_2^n\right|\6H\6c^\top = \60\right\}.$$
+A linear code $\mathscr{C}$ with dimension $k$ and length $n$ is a $k$-dimensional subspace $\mathscr C\subseteq \mathbb F_q^n$ and can be uniquely identified with a generator matrix $\6G$ for this subspace. Another way to refer to the code involves the so called parity-check matrix. We say that a matrix $\6H$ is a parity check matrix for the code $\mathscr{C}$ if the following conditions holds: $$c \in \mathscr{C} \Longleftrightarrow \6H \6c^{\top}= \60.$$
+The code rate is indicated as $R = k/n$.
+The weight distribution of a code is given by $\{N_{\mathscr{C}}(0), N_{\mathscr{C}}(1),\ldots N_{\mathscr{C}}(N)\}$, in such a way that $N_{\mathscr{C}}(w) = \left|\; \mathscr C \cap \mathscr S_{w}\right|.$
+We will use the following notation
+$$\mathscr C_w = \mathscr C \cap \mathscr S_{w},$$
+so that $N_{\mathscr{C}}(w) = |\mathscr C_w|$.
+Due to linearity, we always have that, for any $\6c\in\mathscr C_w$, also $a\6c\in\mathscr C_w$, for any $a\in\mathbb F_q^*$.
+For our purposes, it will be useful to consider only codewords that are identical up to a scalar multiplication.
+To this end, we define 
+$\mathscr C_w^* \subseteq \mathscr C_w$ such that, for any two distinct $\6c, \6c'\in\mathscr C_w^*$, it holds $\6c\neq a\6c'$ for any $a\in\mathbb F_q^*$.
+Notice that there can be several ways to define $\mathscr C_w^*$.
+For the sake of simplicity, we require that each codeword in $\mathscr C_w^*$ has the first non null entry which is a 1.
+Also, we have 
+$$N_{\mathscr{C}}^*(w) = |\mathscr C^*_w| = \frac{|\mathscr C(w)|}{q-1} = \frac{N_{\mathscr{C}}(w)}{q-1}.$$
+We consequently modify also the definition of $\mathscr S_w$, and introduce $\mathscr S_w^*$, that is, the set of all vectors with length $n$, Hamming weight $w$ and first non null entry equal to 1.
+
+%\subsection{Assumptions}
+%\textcolor{red}{\emph{vedere a fine lavoro se usiamo altre assunzioni e metterle qua.}} 
+
+\subsection{Random codes}
+
+We denote by $\distrib_{n,k}$ the uniform distribution of $k$-dimensional linear codes, with length $n$, over $\mathbb F_q$.
+By random code, we refer to a code sampled from $\distrib_{n,k}$.
+This sampling can be done by first sampling a matrix $\6V\xleftarrow{\$}\mathbb F_q^{k\times(n-k)}$ and a length-$n$ permutation $\pi \xleftarrow{\$} \mathscr P_n$, and then computing 
+$\6G = \pi\big((\6I_k, \6V)\big)$. It is easy to see that $\mathscr C$, the code generated by $\6G$, is distributed according to $\distrib_{n,k}$.
+
+The average weight distribution of random codes is a well known quantity; for the sake of completeness, we report it in the following.
+\begin{theorem}\label{the:average_weight}\textbf{Average weight distribution of random codes}\\
+The expected value of $N_{\mathscr C}(w)$, when $\mathscr C$ is distributed according to $\distrib_{n,k}$, is
+$$\binom{n}{w}(q-1)^wq^{-(n-k)} = q^{\big(h_q(w/n)-(1-R)\big)\big(1+o(1)\big)n},$$
+where $h_q(x) = x\log_q(q-1) - x\log_q(x)-(1-x)\log_q(1-x)$ is the $q$-ary entropy function.
+\end{theorem}
+In this paper we are mostly interested in random codes or, at the very least, codes whose structural properties cannot be used to somehow ease the search for codewords.
+To formalize this situation, we make use of the following assumption, which is standard and folklore for the study of ISD algorithms. 
+\begin{assumption}\label{ass:random_cw}
+For any code $\mathscr C\subseteq \mathbb F_q^n$ and any integer $w\in\{0,\ldots,n\}$, we assume that each codeword in $\mathscr C_w^*$ is uniformly distributed over $\mathscr S^*_w$.
+In particular, this implies that its support is  a uniformly random subset of $\{1,\cdots,n\}$ with size $w$.
+\end{assumption}
+%This assumption is generically deemed as a folklore for random codes.

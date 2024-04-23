@@ -1,0 +1,98 @@
+In this section we describe how ISD algorithms can be triggered to estimate the number of codewords of given weight. 
+We first recall the approach in \cite{hirotomo} and emphasise its limits; then, we describe a new method, which is more general and does not suffer from the problems of its predecessor.
+
+\subsection{Using ISD for codeword counting}
+
+In \cite{hirotomo}, the authors exploits the success probability of ISD to provide an estimate for the number of codewords of a fixed low weight in a code $\mathscr{C}$.
+Namely, let $p^*_{\mathsf{ISD}}(w)$ denote the probability that a call to $\mathsf{ISD}$ returns at least one codeword.
+It can be estimated as follows.
+\begin{proposition}
+For a given code $\mathscr C$, under Assumption \ref{ass:random_cw}, the probability that a given permutation $\pi$ is successful for one iteration of ISD is given by
+\begin{equation}
+\label{eq:japan}
+p^{*}_{\mathsf{ISD}}(w) = 1 - \big(1- p_{\mathsf{ISD}}(w)\big)^{N_{\mathscr{C}}(w)},
+\end{equation}
+where $p_{\mathsf{ISD}}$ denotes the probability that, given a permutation $\pi$ and a codeword $\6c\in\mathscr C_w$, $\pi(\6c)$ satisfies the constrains imposed by $f_{\mathsf{ISD}}$.
+\end{proposition}
+\begin{IEEEproof}
+By definition:
+\begin{equation*}
+p^{*}_{\mathsf{ISD}}(w) = 1 - \mathbb{P}\left[f_{\mathsf{ISD}}\big(\pi(\6c)\big) = 0,\forall \6c\in \mathscr C_w \right].
+\end{equation*}
+As a consequence of Assumption \ref{ass:random_cw}, we have that 
+\begin{align*}
+\mathbb{P}&\nonumber \left[f_{\mathsf{ISD}}\big(\pi(\6c)\big) = 0,\hspace{2mm}\forall \6c\in \mathscr C_w \right] \\\nonumber
+%\mid \pi \xleftarrow{\$}S_n
+& = \left(\mathbb{P}\left[f_{\mathsf{ISD}}\big(\pi(\6c)\big) = 0\mid\6c\xleftarrow{\$}\mathscr S_w \right]\right)^{|\mathscr C_w|}\\\nonumber
+& = \left(1-\mathbb{P}\left[f_{\mathsf{ISD}}\big(\pi(\6c)\big) = 1\mid\6c\xleftarrow{\$}\mathscr S_w \right]\right)^{N_{\mathscr{C}}(w)}\\\nonumber
+& = \left(1-p_{\mathsf{ISD}}(w)\right)^{N_{\mathscr{C}}(w)},
+\end{align*}
+from which the result follows.
+\end{IEEEproof}
+The value of $p_{\text{ISD}}^*(w)$ can be observed with numerical simulations, and additionally depends on $N_{\mathscr C}(w)$.
+In other words, we dispose of something that we are able to compute and that depends on $N_{\mathscr C}(w)$.
+So, launching ISD and keeping track of the average number of iterations before one correct codeword is returned, we are able to estimate $N_{\mathscr C}(w)$ by simply reverting \eqref{eq:japan}.
+Namely, if $\widehat{p}_{\text{ISD}}^*(w)$ is the empirically estimated success probability of one ISD iteration, then we have
+\begin{equation}
+\label{eq:obtain_md}
+N_{\mathscr C}(w) \approx \frac{\log\left(1-\widehat{p}_{\text{ISD}}^*(w)\right)}{\log\left(1-p_{\text{ISD}}(w)\right)}.
+\end{equation}
+% Problemi di questo approccio
+While this approach is useful for low weight codewords, it has a major limit for moderately large weights. In this case the value $N_{\mathscr{C}}(w)$ grows very quickly and saturates the right side of Equation \ref{eq:japan}, making the value of $\widehat{p}_{\text{ISD}}^*(w)$ unusable.
+We describe a way to overcome this problem in the next section.
+
+\subsection{A new estimator}
+
+In this section we describe a simple, but rather effective, improvement on the method of \cite{hirotomo}.
+Our idea consists of using the average number of codewords produced to one call to an ISD algorithm as an estimator for the number of codewords with weight $w$.
+We show that our approach generalizes the one in \cite{hirotomo} and, furthermore, is not affected by the saturation phenomenon.
+We additionally estimate the number of ISD calls we need, in order to achieve a bounded error in our estimate.
+Finally, we provide the overall time complexity of the estimator.
+
+
+If the number of codewords of weight $w$ is $N_{\mathscr{C}}(w)$, then the number of solution to the big instance we expect to find, if we run through all the solutions of the small instance, is given by the following result.
+\begin{proposition}
+The average number of codewords which are returned by one call to Stern's subroutine is $$N = N_{\mathscr C}(w) \cdot p_{\mathsf{ISD}}(w).$$
+When $p_{\mathsf{ISD}}(w)N_{\mathscr C}(w)\ll 1$, we have $N\approx p^*_{\mathsf{ISD}(w)}$.
+\end{proposition}
+\begin{IEEEproof}
+\textcolor{blue}{[TBD]}
+\end{IEEEproof}
+
+%In this section we describe at a high level a new way to count the number of codewords for a given weight $w$. Once we have a solution for the small ISD instance, denote with $p_{\text{ISD}}(w)$ the probability that this vector can be extended to a solution of the big instance. 
+
+Since we can estimate $M$ simply by executing the algorithm, we can consequently find an estimate for the number of codewords of weight $w$. Denote with $\widehat{N}$ the estimated number of solutions. We obtain:
+\begin{equation}
+     N^{*}_{\mathscr{C}}(w) \approx \frac{\widehat{N}}{p_{\text{ISD}}(w)}.
+\end{equation}
+The get a better estimate, we can run the test more times, in this case we will observe
+\begin{equation*}
+\begin{cases}
+N^{*}_{\mathscr{C}}(w) \approx \widehat N_1 / p_{\text{ISD}}(w) \\
+N^{*}_{\mathscr{C}}(w) \approx \widehat N_2 / p_{\text{ISD}}(w) \\
+\hspace{0.7cm} \vdots \\
+N^{*}_{\mathscr{C}}(w) \approx \widehat N_t / p_{\text{ISD}}(w)
+\end{cases}.
+\end{equation*}
+So that
+\begin{equation}
+    N^{*}_{\mathscr{C}}(w) \approx \frac{1}{t \cdot p(w)} \sum_{i=1}^{t} \widehat N_i.
+\end{equation}
+The procedure is summarized in Algorithm \ref{alg:newApproach}.
+
+\begin{algorithm}[ht]
+\KwIn{$\6H\in\mathbb F_2^{r\times n}$, $m,w\in\mathbb N$}
+\KwOut{$N^{*}_{\mathscr{C}}(w)$}
+\vspace{2mm}
+%$\widehat{N} \gets$ $m$-length zero vector \\
+\For{$i \in \{1,\ldots,m\}$}{
+$Y = \mathsf{ISD}(\6H)$\;
+$\widehat N_i = |Y_i|$\;
+}
+$N^*_{\mathscr C}(w) = \frac{1}{p_{\mathsf{ISD}}(w)}\sum_{i = 1}^m \widehat N_i$\;
+\Return $N^{*}_{\mathscr{C}}(w)$
+\caption{Counting codewords operating principle}
+\label{alg:newApproach}
+\end{algorithm}
+
+\textcolor{blue}{[confronto con i cinesi, prendo un codice, faccio tot chiamate a ISD, vedo come andiamo noi e come vanno loro. A un certo punto devono saturare. costo per fare Stern]}

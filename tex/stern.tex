@@ -1,0 +1,168 @@
+\subsection{Stern's algorithm}
+Among all the possible instantiations of ISD, in this paper we take into consideration Stern's algorithm \cite{stern1989method}, which is one of the most used, as well as one of the fastest on a classical computer.
+Given the description we have provided in the previous section, we limit ourselves to describe the subroutine $\mathsf{Solve}$.
+This will also allow us to derive a closed form formula for $p_{\mathsf{ISD}}(\ell)$.
+%The favorable case happens with some probability that we indicate as $p_{inv}$, and that gets normally estimated by considering the probability that a random square $n-k-\ell$ matrix is non singular.Hence, also in this paper, we will set$$p_{inv} = \prod_{i = 1}^{n-k-\ell-1}1-2^{-i}.$$Instead, the subroutine introduced by Stern is described in Algorithm \ref{alg:stern}.
+
+\begin{algorithm}[h!]
+    \KwData{$p\in\mathbb N$, $0 \leq \left\lfloor \frac{k+\ell}{2}\right\rfloor $}
+    \KwIn{$\6A \in \mathbb{F}_q^{\ell \times (k+\ell)}$, $\ell\in\mathbb N$}
+    \KwOut{set $X$ with solutions of the small instance, with weight $2p$ equally partitioned}
+    \vspace{2mm}
+    \SetAlgoNoLine
+    \vspace{0.5mm}
+    \tcc{Partition $\6A$}
+    Write $\6A = (\6A', \6A'')$, where $\6A'\in\mathbb F_q^{\ell\times\left\lfloor\frac{k+\ell}{2}\right\rfloor}$, $\6A''\in\mathbb F_q^{\ell\times\left\lceil\frac{k+\ell}{2}\right\rceil}$\;
+    
+    \vspace{0.5em}
+    \tcc{Enumerate candidates for $\6x'$ and $\6x''$}
+    Set $\mathscr L_1 = \left\{(\6x', \6x'\6A'^\top)\mid\6x'\in\mathscr S_p\right\}$\;
+    Set $\mathscr L_2 = \left\{(\6x'', -\6x''\6A''^\top)\mid\6x''\in\mathscr S_p\right\}$\;
+    
+    \vspace{0.5em}
+    \tcc{Find collisions (using efficient strategy, e.g., sorting plus binary search)}
+    Compute $\mathscr X$, the set of all pairs $(\6x', \6x'') \in \mathscr S_p\times \mathscr S_p$ such that $ \6x'\6A'^\top = -\6x''\6A''^\top$\;
+    \Return $\mathscr X$
+    \caption{Stern $\mathsf{Solve}$ subroutine}
+    \label{alg:stern}
+\end{algorithm}
+
+
+%Notice that the algorithm gets executed only when Gaussian elimination is possible, that is, when $\6H'$ is such that the lower rightmost square $n-k-\ell$ submatrix is non singular. 
+
+
+At this point, the main assumption on which this algorithm relies is the following: it assumes that weight $w$ codewords in $\mathscr C$ have $2p$ non null entries in the first $k + \ell$ positions (respectively divided into two block of equal length $(k+\ell)/2$ and weight $p$) and the remaining $w-2p$ set entries in the rightmost $n-k-\ell$ positions.
+In particular, the algorithm aims at finding the leftmost vector using the standard collision search technique (sometimes, also called meet-in-the-middle): 
+It indeed creates two lists $\mathscr{L}_1$ and $\mathscr{L}_2$ through the enumeration of $\mathscr S_p$, together with their partial syndromes.
+As it is well known, the merge can be efficiently computed using a sort plus binary search approach, taking time
+$$O\big(\max\left\{|\mathscr L_1|\cdot\log_2\left(|\mathscr L_1|\right), |\mathscr L_2|\cdot\log_2\left(|\mathscr L_2|\right)\right\}\big).$$
+Notice that the lists have sizes given by
+$$L_1 = \binom{\left\lfloor\frac{k+\ell}{2}\right\rfloor}{p}(q-1)^p,$$
+$$L_2 = \binom{\left\lceil\frac{k+\ell}{2}\right\rceil}{p}(q-1)^p.$$
+Getting rid of the logarithmic factor, and taking into consideration that the resulting list $\mathscr X$ needs to be somehow allocated, we can consider that the overall cost of merging the two lists is given by
+$$ O\big(\max\left\{|\mathscr L_1|, |\mathscr L_2|, |\mathscr X|\right\}\big).$$
+When $\mathscr L_1$ and $\mathscr L_2$ are formed by elements without any relevant structure, we can safely consider that each pair of elements in $\mathscr L_1$ and $\mathscr L_2$ results in a collisions with probability $q^{-{\ell}}$.
+This is a frequently employed heuristic, which corresponds to assume that each entry of the associated syndromes is uniformly distributed over $\mathbb F_q$.
+In such a case, we can set 
+$$|\mathscr X| = |\mathscr L_1|\cdot|\mathscr L_2| q^{-{\ell}} = L_1L_2q^{-\ell}.$$ 
+\begin{remark}
+For the sake of simplicity, we can neglect floors and ceiling.
+This way, we have $L_1 = L_2 = L = \binom{\frac{k+\ell}{2}}{p}(q-1)^p$ and $|\mathscr X| = L^2q^{-\ell}.$
+This way, the cost of the overall subroutine $\mathsf{Solve}$ becomes
+$$t_{\mathsf{Solve}} = L\left(2+Lq^{-\ell}\right).$$
+\end{remark}
+so that, if we denote with $$ L = \binom{(k+\ell)/2}{p} (q-1)^p$$ the number of elements of $\mathscr{L}_0$ and $\mathscr{L}_1$, the associated complexity is given by $L^2/q^{\ell}+L$.
+\begin{comment}
+\begin{IEEEproof}
+    The time complexity of one iteration of the algorithm is obtained by considering that each iteration requires $n$ operations to apply $\pi$ on the columns of $\6H$, $(n-k-\ell)^2(n+k+\ell)$ operations to perform Gaussian elimination (see \cite{peters2010information}), and $L^2/q^{\ell}+L$ operations to compute $\mathscr{E}$, where collision search is intended and the length of the starting lists is $L = \binom{(k+\ell)/2}{p} (q-1)^p.$
+    %The cost of each iteration can be estimated by summing these terms, and taking into account that, on average, the first two steps are repeated $p_{inv}^{-1}$ times before a valid permutation is found. This yields the desired expression.
+\end{IEEEproof}
+\end{comment}
+
+
+%the overall complexity of Stern algorithm is given by:\begin{equation}T_{\sf{S}} = \frac{t_{\sf{S}}}{p_{\sf{S}}^*(w)},\label{eq:complexityStern}\end{equation}
+%If we were dealing with weights for which we expect to have a unique solution, the overall complexity of the algorithm would be given by
+    %$t_{\sf{S}}/p_{\sf{S}}(w)$, where $p_{\sf{S}}(w)$ is the success probability of one iteration of Stern algorithm, and whose value is depicted in Eq.~\ref{eq:probRound}. However, since we are working with multiple solutions to our problem, we also have to take into consideration the expected number of codewords of weight $w$. Note that, if the code contains $N_{\mathscr{C}}(w)$ codewords with weight $w$, under the assumption that all such codewords are independent and uncorrelated, then the complexity to find one of them in one iteration is given by Eq.~\ref{eq:prob}.Consequently, we can modify Stern's complexity as
+    %\begin{equation*}        $T_{\sf{S}} = {t_{\sf{S}}}/{p_{\sf{S}}^*(w)}.$
+    %\end{equation*}
+
+
+
+\begin{comment}
+\subsection{Tweaking ISD}
+
+In this paper we consider a slight modification of ISD, such that in each iteration the algorithm runs through all weight-2 vectors in $S_{r,2}$ and keeps track of all the found vectors.
+For the sake of completeness, the full procedure is displayed in Algorithm \ref{alg:tweak_isd}.
+\begin{algorithm}[ht]
+\KwIn{$\6H\in\mathbb F_2^{r\times n}$}
+\KwOut{$C'\subseteq C(\6H)$}
+\vspace{2mm}
+$C'\gets \varnothing$\;
+Repeatedly generate permutations $\pi$, until $\mathscr{RREF}(\pi(\6H))$ successfully returns $[\6A,\6I_r]$\;
+\For{$\6x\in S_{r,2}$}{
+$\6c\gets \pi^{-1}\left([\6x,\6x\6A]\right)$\;
+$C'\gets C'\cup \6c$\;
+}
+\Return $C'$;
+\caption{Function $\isd$}
+\label{alg:tweak_isd}
+\end{algorithm}
+\begin{algorithm}[ht]
+\KwIn{$\6H\in\mathbb F_2^{r\times n}$, $x\in\mathbb N$}
+\KwOut{$\{m_1,\ldots,m_n\}\in\mathbb R^n$}
+\vspace{2mm}
+$\{v^*_1,\ldots,v^*_n\}\gets \60_n\in\mathbb R^n$\;
+\For{$i\gets 1\hspace{2mm}\mathbf{to}\hspace{2mm}x$}{
+$C'\gets \isd(\6H)$\;
+\For{$d\gets 1\hspace{2mm}\mathbf{to}\hspace{2mm}n$}{
+$y\gets$ number of weight-$d$ codewords in $C'$\;
+$v^*_d\gets v^*_d + y$\;
+}
+}
+\vspace{2mm}
+\tcc{Estimate $v^*_d$ and apply Equation \eqref{eq:md_new}}
+$\{m_1,\ldots,m_n\}\gets \60_n\in\mathbb R^n$\;
+\For{$d\gets 1\hspace{2mm}\mathbf{to}\hspace{2mm}n$}{
+$v^*_d\gets \frac{v^*_d}{x}$\;
+$m_d\gets \frac{v^*_d\binom{n}{n-r}}{\binom{d}{2}\binom{n-d}{n-r-2}}$\;
+}
+\Return $\{m_1,\ldots,m_n\}$;
+\caption{Low weight distribution estimator}
+\label{alg:new_low_weight}
+\end{algorithm}
+We proceed with the analysis on the information we can obtain from such an algorithm.
+To this end, we consider that all of the $\binom{r}{2}$ considered row combinations give rise to $\binom{r}{2}$ distinct codewords.
+Assuming that a code contains $m_d$ codewords with weight $d$, the average number of such codewords we expect to find (in one ISD iteration) is given by
+$$v_d = m_d \scaleto{\isd}{4pt} = m_d\frac{\binom{d}{2}\binom{n-d}{k-2}}{\binom{n}{k}}.$$
+Then, $v_d$ is another quantity which depends on the whole set of codewords with some weight.
+Hence, we may measure it by means of numerical simulations, and then revert the previous expression to produce an estimate of $m_d$.
+To empirically measure $v_d$, it is enough to run a sufficiently high number of ISD calls and, in each call, count the number of codewords with some weight.
+Let $v^*_d$ be such an estimate: then, we estimate $m_d$ as
+\begin{equation}
+\label{eq:md_new}
+m_d = \frac{v^*_d}{p_{\scaleto{\isd}{4pt}}} = \frac{v^*_d\binom{n}{n-r}}{\binom{d}{2}\binom{n-d}{n-r-2}}
+\end{equation}
+The full procedure we employ is represented in Algorithm \ref{alg:new_low_weight}.
+
+\subsection{Estimator for high weights}
+
+As we have already said, the limit in standard ISD is given by the fact that only the low weight tail of the weight distribution can be produced.
+For instance, for the Lee \& Brickell ISD we consider in this paper, we are only able to estimate the codewords whose weight is not larger than $r-2$.
+If the code contains the all ones codeword, then it is clear that the weight distribution is symmetric, since for any codeword $\6c$ of weight $d$ we also have a codeword $\6c+\61_n$
+whose weight is $n-d$.
+However, if such a codeword is not present in the code, then we have no clue about the weight distribution tail for large weights.
+In this section we describe how ISD can be tweaked again, to produce codewords with large weight.
+
+Basically, the idea is very simple: 
+
+If one wants to find all the $m_d$ codewords with weight $d$, it can be easily seen that on average the number of ISD calls is given by
+$$??$$
+The algorithm is randomized, meaning that at each call it picks a random codeword with weight $w$.
+Let $t(w)$ be the time complexity of an ISD call to find a specific codeword $\6c$; when there are $m_w$ such codewords, the complexity gets reduced to
+$t(w)/m_w$.
+Assume that we want to use ISD to find all of the $m_w$ codewords.
+Then, it can be easily seen that the number of calls we need to perform is given by 
+$$\sum_{i = 1}^{m_w}\frac{1}{N-i}\approx \ln (m_w).$$
+
+One other important aspect regards the reliability of using this approach to estimate all of the codewords with some given weight.
+First, the probability that a codeword is never picked, after $x$ ISD calls, is given by
+$$1-(1-1/m_w)^x.$$
+Considering that we would like to draw all of the $m_w$ codewords, we have
+\begin{equation}
+\alpha(x,m_w) = 1-\left(\left(1-\frac{1}{m_w}\right)^{x}   \right)^{m_w}. 
+\end{equation}
+\textcolor{red}{TO BE CHECKED}
+
+\subsection{The setting for ISD}
+
+Notice that, in a practical case, one needs to correctly set ISD, otherwise it may happen that the calls never stop.
+Indeed, in principles, we have no guarantee about the fact that there exists codewords with weight $w$.
+So, it may happen that we never see the output of even a single ISD calls.
+To prevent from such a fact, it is enough to slightly tweak the ISD subroutine, so that it returns a failure in case the chosen set of $k$ indices is not an information set (i.e., if the chosen submatrix is singular).
+For a random matrix, this happens with probability
+$$\prod_{i = 1}^{r}1-2^{-i}\approx 0.2788.$$
+When the matrix is not random, however, this probability may change.
+To this end, it is enough to consider again Theorem ?? and set $n = r$.
+We then compute the probability with which a random matrix with average density $\rho$ has a non trivial kernel.
+Such a probability can be derived by requiring that the corresponding parity-check matrix actually defines a pseudo-code (i.e., with zero dimension).
+\end{comment}

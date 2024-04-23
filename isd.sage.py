@@ -244,7 +244,7 @@ ALL STEPS (for solving a random code with Lee and Brickell):
     5) [x] Enumerate all possible c' (which size is a (1)x(k) vector)
     6) [x] For each generated c' compute c''=-c'*B^(T)
     7) [x] If the sum of the weights of c' and c'' is w, add it to the set of solutions
-    8) [x] If the set of solutions is not null return it, otherwise increase w of 1 and go back to step 5
+    8) [x] If the set of solutions is not null return it, otherwise increase w of 1 and go back to step 4
     9) [ ] Calculate time complexity
 
 Some random thoughts:
@@ -253,10 +253,17 @@ Some random thoughts:
     - what is a good value for p? is it iterated too?
 
 ALL STEPS (for solving a random code with Stern):
-    1) Generate the random code (maybe generate randomly a parity check matrix)
-    2) Generate a valid random permutation (repeat until it's found)
-    3) Perform PGE on the permuted parity check matrix and obtain A (or B if using Lee and Brickell, but let's call it A)
-    4) Use A to perform solve, from now on it
+    1) [x] Generate the random code (maybe generate randomly a parity check matrix)
+    2) [x] Generate a valid random permutation (repeat until it's found)
+    3) [x] Perform PGE on the permuted parity check matrix and obtain A and B, thus A1 and A2
+    4) [x] Define a low weight p to start itering on
+    5) [x] Enumerate all possible x' and x''
+    6) [X] Generate lists L1 and L2
+    7) [ ] Find matches in a proper way (complexity speaking)
+    8) [x] For each match c' calculate c'' =  -c'*B.T
+    8) [x] If the set of solutions is not null return it, otherwise increase w of 1 and go back to step 4
+    ?) [ ] Use an optimal l
+    9) [ ] Calculate time complexity
 '''
 
 if __name__ == "__main__":

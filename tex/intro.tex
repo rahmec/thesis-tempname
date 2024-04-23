@@ -1,0 +1,138 @@
+Informally, one can think of a code as a set of strings defined over some alphabet, normally a finite field $\mathbb F_q$, which we call codewords. 
+The natural application of codes is that of correcting errors in communication channels.
+Geometrically, the problem can be formulated as follows: given a code $\code$ (a set of length-$n$ strings) and some input string $\6x$, find the codeword $\6c\in\code$ which mostly resembles $\6x$.
+This normally goes by the name of Maximum Likelihood Decoding (MLD) problem.
+
+Arguably, the most studied case is that of linear codes and transmission over additive channels.
+In a linear code, the codewords are closed under the sum operation: the sum of any two codewords yields another codeword. 
+Because of this property, a linear code $\code$ is anything but a linear subspace of the ambient vector space $\mathbb F_q^n$.
+For additive channels, one has $\6x = \6c+\6e$ where $\6e$ is a length-$n$ string, so that also $\6x$ is a length-$n$ string.
+Codewords are seen as points of $\mathbb F_q^n$ and the similarity between two codewords is quantitatively measured using some distance function $\mathrm{dist}:\mathbb F_q^n\mapsto \mathbb N$.
+Then, MLD can be interpreted with a geometric flavour: given $\code\subseteq \mathbb F_q^n$ (a collection of points in the space) and some point $\6x\in\mathbb F_q^n$, find the codeword $\6c\in\code$ which minimizes $\mathrm{dist}(\6c, \6x)$.
+Each codeword $\6c$ is characterized by Voronoi region, which is the set of points $\6x\in\mathbb F_q^n$ for which the closest codeword is $\6c$.
+So, MLD asks, on input $\6x$, to find the center of the Voronoi region in which $\6x$ is contained.
+
+It is clear that the ability to solve MLD is of great importance, since it allows to correct errors happening in communication channels.
+Let $\mathcal D$ be a decoder, i.e., an algorithm that solves MLD on input some code $\code$ and some string $\6x$.
+Imagine that, upon transmission of some $\6c\in\code$, the receiver gets $\6x = \6c+\6e$: we desire that $\mathcal D(\code, \6x) = \6c$, since this means that we are able to correct the errors introduced by the channel and, in the end, can retrieve the transmitted sequence $\6c$.
+Obviously, we also desire that $\mathcal D$ is an efficient algorithm (we consider this aspect later).
+Regardless of whether such a decoding algorithm exists, one can establish the performances of $\mathcal D$ using the notion of \textit{minimum distance}, i.e., the minimum value of $d =\mathrm{dist}(\6c, \6c')$ existing between two (different) codewords.
+Indeed, each Voronoi region has a radius which is at least $d/2$.
+So, whenever $\6e$ is properly bounded (say, whenever $\mathrm{wt}(\6e)<d/2$), one guarantees that $\6x$ remains in the same Voronoi region.
+Instead, if $\mathrm{wt}(\6e)\geq d/2$, then the solution to MLD may be different from $\6c$, because the error vector $\6e$ moves $\6x$ to a different Voronoi region.
+As a rule of thumb, linear codes having a good (to be read as high) minimum distance can correct more errors.
+
+\paragraph{Hardness of finding the minimum distance}
+
+The problem of finding the minimum distance of a given linear code is a well known, NP-hard problem, which is even hard to approximate.
+This implies that, unless P$\neq$NP, there cannot exist an \textit{efficient} algorithm that finds the minimum distance of \textit{any} given linear code.
+Yet, this does not imply that our hopes to know the minimum distance of many codes we employ is lost.
+First, there exist families of codes for which the minimum distance is chosen by design (think about Reed-Solomon or other algebraic codes).
+Moreover, it is easy to find families of codes for which finding the minimum distance is easier, perhaps solvable in polynomial time.
+Notice that this does non contradict the NP-hardness of the problem, since we are speaking of \textit{specific} classes of codes: any algorithm that would work properly for these codes will not work for \textit{any} input code.
+
+Moreover, being NP-hard does not mean that practical instances cannot be solved in \textit{reasonable} time.
+Even if known solvers take exponential time, this time may still be feasible when the input is sufficiently small.
+
+Finally, the notion of NP-hardness is binded to the input size of the problem.
+Informally, NP-hardness implies that a polynomial time solver cannot exist.
+In other words, any algorithm $\mathcal A$ solving an NP-hard problem is expected to take exponential time\footnote{Existence of a polynomial time algorithm for such a problem would imply collapse of the polynomial hierarchy, i.e., would imply P$=$NP.}
+Here, polynomial/exponential time is referred to the time complexity of the algorithm, seen as a function of the input size.
+If we denote by $n$ the input size, then an exponential time algorithm $\mathcal A$ is expected to run in time $O(2^{\alpha n})$ for some constant, positive $\alpha$.
+This remark, which perhaps is trivial, will turn useful when we will speak about LDPC codes.
+
+As a final remark, we would like to specify that NP-hardness is a worst case result.
+In other words, a problem is (informally) NP-hard if there cannot exist an algorithm solving \textit{all instances} in polynomial time.
+Still, specific instances of the problem may be easily solvable.
+That is, the problem may be easy \textit{on average}, or there may exist a subset of instances for which we know about an efficient algorithm.
+
+
+\paragraph{LDPC codes} Low Density Parity-Check (LDPC) codes are a special family of codes, introduced by Gallager in his PhD thesis.
+Arguably, LDPC codes are among the most studied families of codes, because of their great error correction capabilities combined with very efficient algorithm for both encoding and decoding.
+It is also well known that, under certain ideal conditions (e.g., infinite length and no cycles), LDPC codes can achieve the channel capacity.
+As a matter of fact, they are employed in many applications and communication standards.
+
+An LDPC code is, essentially, a code whose parity-check matrix admits a wide majority of zeros.
+For this reason, we say the matrix is \textit{sparse}.
+It turns out that this sparsity is the key ingredient for all the good properties of LDPC codes.
+Indeed, sparsity allows for efficient encoding techniques: roughly speaking, the process gets faster since the presence of many zeros allows to skip many computations.
+Moreover (and more importantly) sparsity allows for fast decoding.
+Decoders for LDPC codes are \textit{message-passing} algorithms: the low complexity, as well as the capacity to correct a non trivial amount of errors, is due to the wide majority of zeros in the parity-check matrix.
+This can be seen when the code is represented with its Tanner graph, that is, a bipartite graph representing a given parity-check matrix.
+The graph can be defined for any parity-check matrix (so, for any code), but its nice properties appear only when LDPC codes are considered.
+Namely, the graph is sparse, in the sense that it has a very few edges.
+Put it under graph theoretic words, the nodes in the graph have low degree.
+Again, the sparsity of the Tanner graph is a key ingredient to make decoding work.
+
+
+\paragraph{Information Set Decoding}
+Information Set Decoding (ISD) is a family of generic decoders, that is, algorithms that can decode any input code.
+With slight modifications, these algorithms can also be used to find codewords of (upper) bounded weight.
+The canonical scenario is the one in which one has to find the unique solution to a given decoding instance, or has to find one codeword with the minimum weight.
+In the latter case, we speak of finding the minimum distance of a given code.
+
+An ISD algorithm is an algorithm which can find the minimum distance of any given linear code.
+It is a randomized algorithm, whose average running time depends on the searched weight.
+Depending on the family of considered codes, the cost of ISD may vary.
+For instance, when dealing with random codes, it is well known that the minimum distance is linear in the code length $n$, e.g., is $d = \delta n$ for some constant $\delta\in [0 ; 1]$.
+In particular, one has $\delta = h^{-1}(1-R)$, where $R = k/n$ is the code rate.
+In such a case, the cost of the algorithm is in $2^{\alpha n\big(1+o(1)\big)}$ for some positive constant $\alpha$.
+For codes having a minimum distance which is sublinear in $n$ (e.g., $d = o(n)$), then a well known result from Canto-Torres and Sendrier says that the cost of all ISD algorithms grows as $2^{-d\log_2(1-R)\big(1+o(1)\big)}$.
+Notice that, in these cases, the cost of the algorithm is sub-exponential, since $d$ grows less than linearly with $n$.
+
+When one possesses some information about the code, ISD can be sped up.
+This fact is easy to argue.
+Indeed, ISD algorithms have been designed (mostly) to attack code-based cryptosystems, in which linear codes are either random codes, or indistinguishable from random codes.
+In other words, nothing about the code is known, so that the algorithm cannot make any assumption on the code structure, nor on the shape of the searched codeword with minimum weight.
+Still, when something about the code is known, one can speed-up ISD.
+This is the case when the code has a non trivial automorphism group or when, for instance, the code has a very special geometric structure.
+
+\subsection{Our goal}
+
+At the best of our knowledge, ISD on LDPC codes has never been studied.
+In such a case, the main difference with respect to random codes is in that the parity-check matrix $\6H$ defining the code is sparse.
+This typically does not happens when considering random codes.
+Yet, given the sparsity, we believe there is a strong possibility that ISD algorithms can be significantly made faster.
+In other words, we want to redesign ISD, considering the case in which the input parity-check matrix is sparse (we will measure sparsity by a parameter whose value will probably be crucial in setting the hardness of the problem).
+
+Our contributions are twofold, perhaps threefold.
+First, we want to improve the state-of-the-art on algorithms to find the minimum distance of LDPC codes.
+At the best of our knowledge, many of the LDPC codes currently employed in communication standards have an unknown minimum distance.
+We believe our algorithms can greatly help in filling this gap.
+
+Moreover, we want to study the hardness of the minimum distance problem, when considering codes admitting a very sparse representation.
+This contribution may be of fundamental importance, from a complexity theory point of view.
+Indeed, the sparsity of $\6H$ plays a crucial role in the input size of the problem.
+Normally, a matrix with $r = (1-R)n$ rows and $n$ columns can be represented with $rn = O(n^2)$ bits.
+However, when the matrix is very sparse, the input size may change.
+Let $\gamma$ denote the density of $\6H$, i.e., $\gamma$ is the ratio between the number of ones and the number of elements in the matrix.
+For each one in the matrix, it may be enough to store its row and column indices, taking respectively $\log_2(r)$ and $\log_2(n)$ bits.
+So, representing a sparse $\6H$ takes binary size
+$$L = \gamma rn \big(\log_2(r)+\log_2(n)\big) = O\big(\gamma n^2\log_2(n)\big).$$
+When $\gamma$ is very small, the input size may no longer be polynomial in $n$.
+For instance, if $\gamma = \Omega(1/\sqrt{n})$, then $L = O\big(\log_2(n)\big)$.
+In such a case, the input size is logarithmic in $n$, instead of quadratic.
+
+Many authors say that finding the minimum distance of LDPC codes is NP-hard, since an LDPC code is a linear code.
+This is false, for two reasons.
+First, LDPC codes are a subset of all linear codes: even if the minimum distance problem is NP-hard for linear codes, it can still happen that the problem is easy for LDPC codes.
+So, the complexity of the problem still needs to be understood.
+Moreover, the matter becomes much more interesting when one considers values of $\gamma$ so that the input size is no more polynomial in $n$.
+In such a case, the problem may change complexity class (we hardly doubt this is the case).
+Or, it may remain NP-hard, but an exponential time algorithm may be extremely fast.
+Indeed, an exponential time algorithm would take time
+$$2^{\alpha L} = 2^{\alpha \log_2(n)} = n^\alpha.$$
+So, finding the minimum distance may be polynomial in the code length: this would be a breakthrough results, as it would imply that LDPC codes are much easier to study than almost all the other codes.
+
+Notice that such a goal is not unreasonable.
+Indeed, LDPC codes already allows to solve the decoding problem efficiently (when the number of errors to be corrected is sufficiently small).
+This behaviour is typical of LDPC codes, and is not exhibited by any other code.
+The decoding problem and the minimum distance problem are strictly similar; for instance, the best solvers for generic codes, for both problems, are ISD algorithms.
+So, the fact that the decoding problem is somewhat easier may imply that the minimum distance problem for LDPC codes is easier, as well.
+
+Finally, as a final contribution, we would like to draw some more connections between LDPC codes and graphs.
+There already exist many combinatorial objects (e.g., cycles and trapping sets) that arise frequently when studying LDPC code and which are naturally described as graph theoretic objects.
+We would like to study these relations further.
+This goal is strongly motivated by some results  for computational problems in coding theory.
+For instance, the clique problem gets significantly easier when studying sparse graphs (called graphs with low degeneracy).
+For a graph with degeneracy $t$, the problem is solvable in time $O(2^{t/4})$: when $t = \Omega\big(\log_2(n)\big)$, the problem becomes solvable in polynomial time.

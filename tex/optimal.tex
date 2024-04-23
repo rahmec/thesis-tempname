@@ -1,0 +1,56 @@
+Interestingly, the figure in the previous section shows that Lee\&Brickell and Stern's algorithms behave in the same way, when sufficiently high values of $w$ are considered.
+Also, the complexity of these algorithms tends to $N_{\mathscr N}^{\mathcal U}(w)$, that is, the average number of weight-$w$ codewords which are contained in a random code.
+This result is actually much more deeper; this last section will be exactly dedicated to the study of this regime.
+
+\subsection{Optimal performances of ISD}
+
+We first derive a lower bound which takes into account the best performances of any potential ISD algorithm.
+\begin{proposition}\textbf{Overall cost}\\
+%Our estimator using a ISD subroutine with cost $t_{\mathsf{ISD}}(w)$, on input $w$ and desiring a confidence interval $\varepsilon \geq 0$, has average time complexity$$M\cdot t_{\mathsf{ISD}}(w) = \frac{3\ln(1/\zeta)}{\epsilon^2}\cdot\frac{t_{\mathsf{ISD}}(w)}{p_{\mathsf{ISD}}(w)}.$$
+Regardless of the specific ISD variant (i.e., for any algorithm operating as in Algorithm \ref{alg:isd_general}), the time complexity of our estimator is lower bounded by $$\frac{3\ln(1/\zeta)}{\epsilon^2}N_{\mathscr C}(w).$$
+If both $\zeta$ and $\epsilon$ are constant, then the lower bound is in $O\big(N_{\mathscr C}(w)\big)$.
+\end{proposition}
+\begin{IEEEproof}
+%The first part of the thesis is trivial: we need $M$ calls, where $M = \frac{3\ln(1/\zeta)}{\epsilon^2 p_{\mathsf{ISD}}(w)}$, each taking time $t_{\mathsf{ISD}}(w)$.
+We first consider that $t_{\mathsf{ISD}}\geq t_{\mathsf{Solve}}$ (indeed, the subroutine $\mathsf{Solve}$ is always invoked inside each call to ISD).
+Let $\widehat N$ be the number of small instance solutions which are found by $\mathsf{Solve}$: then it must be $\mathsf{Solve}\widehat N$.
+Hence, on average, the cost of $\mathsf{Solve}$ cannot be lower than $\mathbb E[\widehat N] = p_{\mathsf{ISD}}(w) N_{\mathscr C}(w)$.
+To sum up, we have derived the following chain of inequalities
+$$\frac{t_{\mathsf{ISD}}(w)}{p_{\mathsf{ISD}}(w)}\geq \frac{t_{\mathsf{Solve}}(w)}{p_{\mathsf{ISD}}(w)}\geq\frac{\widehat N(w)}{p_{\mathsf{ISD}}(w)}\geq \frac{p_{\mathsf{ISD}}(w) N_{\mathscr C}(w)}{p_{\mathsf{ISD}}(w)} = N_{\mathscr C}(w).$$
+\end{IEEEproof}
+Taking into account this bound, we now show that even the simple Lee\& Brickell is optimal, when $w$ is sufficiently large.
+We then comment about this result, which may have far deeper implications for the problem we are studying.
+\begin{theorem}\textbf{Optimality of Lee\&Brickell, for random codes}\\
+When $\epsilon$ is constant, \textcolor{blue}{bla bla bla}
+\end{theorem}
+\begin{IEEEproof}
+We consider only the non-constant term of the time complexity.
+Applying some algebraic manipulations, we obtain
+\begin{align*}
+\frac{t_{\mathsf{Solve}}}{p_{\mathsf{ISD}}} & \nonumber = \frac{\binom{n}{w}(q-1)^p}{\binom{n-k}{w-p}}\\\nonumber
+& = \frac{\binom{n}{w}(q-1)^p}{\binom{n-k}{w-p}}\cdot \frac{(q-1)^wq^{n-k}}{(q-1)^wq^{n-k}}\\\nonumber
+& = \frac{\binom{n}{w}(q-1)^w q^{n-k}}{\binom{n-k}{w-p}(q-1)^{w-p}q^{-(n-k)}}\\\nonumber
+& = \frac{N_{\mathcal U}(w)}{\binom{n-k}{w-p}(q-1)^{w-p}q^{-(n-k)}}.
+\end{align*}
+The numerator is the number of weight-$w$ codewords in a random code and does not depend on $p$.
+So, the above time complexity is minimized whenever the denominator (which, instead, depends on $p$) is maximized.
+However, the only term which depends on $p$ is $\binom{n-k}{w-p}(q-1)^{w-p}$, so it is enough to maximize this quantity.
+To this end, let us write $k = Rn$, $w = W n$ and $p = Pn$, where $W\in [0 ; 1]$ and $P\in [0 ; \min\{W; R\}]$.
+Asymptotically, we have 
+$$\binom{n-k}{w-p}(q-1)^{w-p} = q^{n\left(1-R\right)h_q\left(\frac{W-P}{1-R}\right)\big(1+o(1)\big)}.$$
+It is well known that the maximum of the $q$-ary entropy is $1$ and is achieved when $x = 1-\frac{1}{q}$.
+This implies that we can achieve the maximum only if
+$$\frac{W-P}{1-R} = 1-\frac{1}{q}\implies W-P = \frac{q-1}{q(1-R)}.$$
+\end{IEEEproof}
+\begin{theorem}[\textbf{Number of ISD calls for exact counting}]
+Let us consider the estimator in Algorithm \ref{alg:newApproach}, for weight $w$ and $m$ calls to ISD.
+Then to have that $\left\lfloor N^*_{\mathscr C}(w)\right\rceil$ is equal to $N_{\mathscr C}(w)$ with probability at least $1-\zeta$ (with $\zeta\geq 0$ and constant), we need
+$$m\geq \frac{12\ln(1/\zeta) }{p_{\mathsf{ISD}}(w)}N_{\mathscr C}^2(w).$$
+\end{theorem}
+\begin{IEEEproof}
+We observe that $\left\lfloor N_{\mathscr C}^*(w)\right\rceil = N_{\mathscr C}(w)$ if
+$$N_{\mathscr C}(w) - \frac{1}{2}\leq N_{\mathscr C}^*(w)\leq N_{\mathscr C}(w) + \frac{1}{2}.$$
+Since we are expressing the maximum error term, in absolute terms, as $\pm \varepsilon N_{\mathscr C}(w)$, we set 
+$$\varepsilon = \frac{1}{2}  N_c(w).$$
+Substituting this into the value resulting from Theorem \ref{the:num_calls}, we obtain the thesis.
+\end{IEEEproof}

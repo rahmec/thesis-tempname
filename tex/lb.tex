@@ -1,0 +1,7 @@
+The Lee\&Brickell ISD uses $\ell = 0$.
+In other words, the matrix $\6A$ is actually not considered (since it has zero rows) and \eqref{eq:small} is actually solved considering that $\6c'$ is a vector with low weight $p$.
+So, one goes through all $\binom{k}{p}(q-1)^p$ candidates for $\6c'$ and, for each candidate, computes the corresponding $\6c''$ as $-\6c'\6B^\top$.
+
+In such a case, the constraint is simply that the permutation $\pi$ permutes the solution $\6c$ so that, on the leftmost $k$ coordinates, only $p$ set coordinates are placed.
+So, the success probability of one iteration is 
+$$\frac{\binom{k}{p}\binom{n-k}{w-p}}{\binom{n}{w}}.$$

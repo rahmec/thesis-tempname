@@ -1,0 +1,80 @@
+We start by considering a family of LDPC codes which we use as a prototype to introduce our analysis.
+We start with the following definition.
+\begin{definition}\label{def:family_one}
+For $r,n\in\mathbb N$, $1\leq r\leq n$ and $\rho\in[\![ 0 ; 1]\!]$, we define $\1{D}_{r,n}(\rho)$ as the distribution over $\mathbb F_2^{r\times n}$ such that, if $\6H\sim \1{D}_{r,n}(\rho)$, then 
+$$h_{i,j}\sim \1{B}(\rho),\hspace{2mm}\forall i\in[1;r],\hspace{1mm}j\in[1;n].$$
+\end{definition}
+In other words, to sample a matrix from $\1{D}_{r,n}(\rho)$, one simply has to generate each of its elements according to $\1{D}_{r,n}(\rho)$.
+When $\rho \ll \frac{1}{2}$, then a typical matrix sampled from the distribution can be seen as the parity-check matrix of an LDPC code.
+For instance, a matrix sampled from $\1{D}_{r,n}(\rho)$ is such that its expected Hamming column and row weights are, respectively, $v_r = \rho r$ and $v_c = \rho n = \frac{n}{r}v_c$.
+We then see that there is a clear analogy between a matrix $\6H\sim\1{D}_{r,n}(\rho)$ and the parity-check matrix of a regular LDPC codes.
+Note that any matrix in $\mathbb F_2^{r\times n}$ can be sampled from $\1{D}$, but a typical matrix coming from $\1{D}$ is expected to be, basically, a sparse matrix.
+
+To turn the distribution $\1{D}_{r,n}(\rho)$ into a distribution of parity-check matrices for codes with redundancy $r$, we need a technical refinement, which we introduce next.
+\begin{definition}\label{def:family_one}
+For $r,n\in\mathbb N$, $1\leq r\leq n$ and $\rho\in[\![ 0 ; 1]\!]$, we define $\widetilde{\1{D}}_{r,n}(\rho)$ as the distribution over $\mathbb F_2^{r\times n}$ which arises from the following experiment:
+\begin{itemize}
+    \item[1. ] sample $\6H$ according to $\1{D}_{r,n}(\rho)$;
+    \item[2. ] output $\6H$ if $\mathrm{rank}(\6H) = r$, otherwise restart from step 1.
+\end{itemize}
+\end{definition}
+It is easily seen that any matrix sampled from $\widetilde{\1{D}}_{r,n}(\rho)$ defines the parity-check matrix of a code with redundancy $r$ and length $\leq n$.
+In the next section we derive the average weight distribution of the codes generated from $\widetilde{\1{D}}_{r,n}(\rho)$.
+
+\subsection{Average weight distribution over $\widetilde{\1{D}}_{r,n}(\rho)$}
+
+We start with the following theorem, where we derive the probability that a random weight-$d$ codeword is in the kernel of a matrix sampled from $\1{D}_{r,n}(\rho)$.
+\begin{theorem}\label{the:pr_c_H}
+Let $\6c\in S_{n,d}$ and $\6H\sim\1{D}_{r,n}(\rho)$.
+Then
+$$u_{r,n}(d,\rho) = \mathrm{Pr}[\6c\in C(\6H)] = \left(\sum_{\begin{smallmatrix}
+i \in [0 ; d]\\
+\text{$i$ even}\end{smallmatrix}}\binom{d}{i}\rho^i(1-\rho)^{d-i}\right)^r.$$
+\end{theorem}
+\begin{IEEEproof}
+We are going to have $\6c\in C(\6H)$ if and only if, for every row $\6h$ of $\6H$, we have $\6h \6c^\top = 0$.
+Since $\6H$ is sampled at random from $\1{D}_{r,n}(\rho)$, every row is constituted by $n$ independent and uncorrelated random variables with distribution $\1{D}(\rho)$.
+Then, we have
+$$\mathrm{Pr}[ \6h \6c^\top = 0] = \sum_{\begin{smallmatrix}
+i \in [0 ; d]\\
+\text{$i$ even}\end{smallmatrix}}\binom{d}{i}\rho^i(1-\rho)^{d-i}.$$
+Since there are $r$ rows, we consider the $r$-th power of the above quantity to obtain the desired probability.
+\end{IEEEproof}
+\begin{theorem}\label{the:average_weight_H}
+Let $\6H\sim\1{D}_{r,n}(\rho)$; then
+$$\langle |C_d(\6H)|\rangle = g_{r,n,\rho}(d) =  \binom{n}{d}u_{r,n}(d,\rho)$$
+\end{theorem}
+\begin{IEEEproof}
+Let $f(\6c,\6H)$ be the function that returns $1$ if $\6c\in C(\6H)$, and $0$ otherwise.
+We then have
+$$\langle |C_d(\6H)|\rangle = \sum_{\6H\in \mathbb F_2^{r\times n}}\mathrm{Pr}[\6H\mid \6H\sim\1{D}_{r,n}(\rho)]\sum_{\6c\in S_{n,d}} f(\6c,\6H),$$
+where $\mathrm{Pr}[\6H\mid \6H\sim\1{D}_{r,n}(\rho)]$ is the probability that the distribution $\1{D}_{r,n}(\rho)$ outputs $\6H$. 
+With a simple rewriting, we have
+\begin{align*}
+\langle |C_d(\6H)|\rangle &\nonumber = \sum_{\6c\in S_{n,d}}\sum_{\6H\in \mathbb F_2^{r\times n}}\mathrm{Pr}[\6H\mid \6H\sim\1{D}_{r,n}(\rho)] f(\6c,\6H)]\\\nonumber
+& = \sum_{\6c\in S_{n,d}}\sum_{\begin{smallmatrix}\6H\in\mathbb F_2^{r\times n}\\
+\6c\in C(\6H)\end{smallmatrix}}\mathrm{Pr}[\6H\mid \6H\sim\1{D}_{r,n}(\rho)]\\\nonumber
+& = \sum_{\6c\in S_{n,d}}u_{r,n}(d,\rho).
+\end{align*}
+Since $u_{r,n}(d,\rho)$ is independent of $\6c$, it is enough to multiply such a quantity by the number of elements in $S_{n,d}$, which is given by $\binom{n}{d}$.
+\end{IEEEproof}
+Notice that the quantity expressed in Theorem \ref{the:average_weight_H} is not exactly the average weight distribution of codes with redundancy $r$.
+Indeed, remember that $\1{D}_{r,n}(\rho)$ is a distribution of matrices with $r$ rows, but there is no guarantee about the rank.
+To consider the rank, we need to make use of the distribution $\tilde{\1{D}}_{r,n}(\rho)$.
+However, unless extreme parameters are considered, it is very likely that a matrix sampled from $\1{D}_{r,n}(\rho)$ has full rank $r$, so that we can safely employ $g_{r,n,\rho}(d)$ for the average weight distribution of matrices sampled from $\tilde{\1{D}}_{r,n}(\rho)$.
+We formalize such an assumption in the following.
+\begin{assumption}\label{ass:ass_rate}
+We assume that the distributions $\1{D}_{r,n}(\rho)$ and $\tilde{\1{D}}_{r,n}(\rho)$ are indistinguishable. 
+Then, if $\6H\sim\tilde{\1{D}}_{r,n}(\rho)$, we can use $g_{r,n,\rho}(d)$ to obtain $\langle |C_d(\6H)|\rangle$.
+\end{assumption}
+\begin{remark}
+\emph{The validity of the above assumption will be confirmed in the remainder of the paper, where we make use of numerical simulations to confirm our treatment.
+Yet, we can also give some theoretical arguments to sustain it.
+For the sake of simplicity, let us consider the case of $\rho = 1/2$.
+The probability that $\6H\sim\1{D}_{r,n}(\rho)$ does not have full rank is given by
+$\prod_{i = 1}^{r-1}(2^n-2^i)$.
+If $n = r$, then this probability (for sufficiently large $n$) tends to $0.288$.
+So, one can distinguish between $\1{D}_{n,n}(\rho)$ and $\tilde{\1{D}}_{n,n}(\rho)$ rather easily: it is enough to  sample a large enough number of matrices and check whether they have full rank or not.
+However, for $n>r$, then the probability to obtain a non full rank matrix from $\1{D}_{n,n}(\rho)$ becomes negligible.
+Indeed, it is easily seen that for large $n$ and $r$ sufficiently lower than $n$, the previous probability asymptotically tends to $1$.}
+\end{remark}

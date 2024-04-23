@@ -1,0 +1,115 @@
+In this section we derive the number of ISD calls we would need, in order to achieve some bounded error in our estimate.
+Starting from this, we are able to derive a closed form formula for the time complexity of our approach.
+
+\subsection{Statistical reliability}
+
+We consider the statistical reliability of each measurement, that is, we define a confidence interval and estimate the probability that our estimate is within the defined interval.
+To this end, we consider that the $i$-th call to ISD returns a variable $\widehat N_i$ (the number of found solutions) which is Binomial distributed, as follows
+$$\mathbb{P}[\widehat N_i = x] = \binom{N_{\mathscr C}(w)}{x}p_{\mathsf{ISD}}(w)^x\big(1-p_{\mathsf{ISD}}(w)\big)^{N_{\mathscr C}(w)-x}.$$
+Indeed, under Assumption \ref{ass:random_cw}, any weight-$w$ codeword behaves as a random codeword over $\mathscr S_w^*$.
+Hence, it will be returned as the output of ISD with probability $p_{\mathsf{ISD}}(w)$.
+So, $\widehat N_i$ follows a Binomial distribution with parameter $p_{\mathsf{ISD}}(w)$.
+Since each call to ISD is independent from the others, we consider that all the $\widehat N_i$ are independent and uncorrelated variables.
+To estimate the error in our estimate, we consider the following theorem, which is a straightforward application of the Chernoff's bound reported in Theorem \ref{the:chernoff}.
+\textcolor{blue}{[I changed $t$ with $M$; guarda se è coerente dappertutto.]}
+\begin{theorem}
+Let us consider the new estimator with input parameters $w$ and $m$.
+For any $\varepsilon \geq 0$, the error in the estimate is not greater than $\varepsilon$ with probability greater than $$1-e^{-m \cdot p_{\mathsf{ISD}}(w) \frac{\varepsilon^2}{3}}.$$ 
+\end{theorem}
+\begin{IEEEproof}
+We consider that each $\widehat N_i$ is a random variable, with mean $ p_{\mathsf{ISD}}(w)  N_{\mathscr C}(w)$ and taking values in $[0 , N_{\mathscr C}(w)]$.
+Remember that our estimate is obtained as
+$N_{\mathscr C}^*(w) = \frac{1}{m \cdot p_{\mathsf{ISD}}(w) }\sum_{i = 1}^m\widehat N_i$.
+We have that we will make an error not greater than some $\varepsilon \geq 0$ whenever 
+$$(1-\varepsilon)N_{\mathscr C}(w)\leq N_{\mathscr C}^*(w)\leq(1+\varepsilon)N_{\mathscr C}(w),$$
+which implies
+$$m(1-\varepsilon) p_{\mathsf{ISD}}(w)  N_{\mathscr C}(w)\leq\sum_{i = 1}^m\widehat N_i\leq m(1+\varepsilon) p_{\mathsf{ISD}}(w)  N_{\mathscr C}(w).$$
+%$$t(1-\varepsilon)M\leq\sum_{i = 1}^M\widehat N_i\leq t(1+\varepsilon)M.$$
+Dividing all sides by $N_{\mathscr C}(w)$, we obtain
+$$m(1-\varepsilon) p_{\mathsf{ISD}}(w) \leq\sum_{i = 1}^m\frac{\widehat N_i}{N_{\mathscr C}(w)}\leq m(1+\varepsilon) p_{\mathsf{ISD}}(w) .$$
+Notice that the above corresponds to imposing
+\begin{equation}
+\label{eq:confidence1}
+\left|\sum_{i = 1}^m\frac{\widehat N_i}{N_{\mathscr C}(w)} - m\cdot p_{\mathsf{ISD}}(w) \right|\leq m \varepsilon \cdot  p_{\mathsf{ISD}}(w) .
+\end{equation}
+In other words, our estimate will be affected by an error which is not greater than $\varepsilon$ with probability
+\begin{equation}
+\label{eq:pr_confidence1}
+1- \mathbb P\left[\left|\sum_{i = 1}^m\frac{\widehat N_i}{N_{\mathscr C}(w)} - m\cdot  p_{\mathsf{ISD}}(w) \right|\geq m \cdot \varepsilon  p_{\mathsf{ISD}}(w) \right].
+\end{equation}
+We now manipulate \eqref{eq:confidence1} and \eqref{eq:pr_confidence1} so that Theorem \ref{the:chernoff} can be applied.
+To this end, we first define $X_i = \frac{\widehat N_i}{N_{\mathscr C}(w)}$, which is a random variable bounded as $0\leq X_i\leq 1$ and with mean value $\mathbb E[X_i] =  p_{\mathsf{ISD}}(w) $.
+Notice that $X = \sum_{i = 1}^m\frac{\widehat N_i}{N_{\mathscr C}(w)} = \sum_{i = 1}^m X_i$ and $\mu = \mathbb E[X] = \sum_{i = 1}^m\mathbb E[X_i] = m\cdot  p_{\mathsf{ISD}}(w) $.
+Hence, \eqref{eq:pr_confidence1} can be rewritten as
+\begin{equation}
+\label{eq:pr_confidence2}
+1- \mathbb P\left[\left|X - \mu\right|\geq  \mu\varepsilon\right].
+\end{equation}
+Applying the Chernoff's bound, we obtain
+\begin{align*}
+1 - \mathbb P\left[\left|X - \mu\right|\geq  \mu\varepsilon\right]&\nonumber \geq 1- e^{-\mu\frac{\varepsilon^2}{3}}\\\nonumber
+& = 1-e^{-m\cdot  p_{\mathsf{ISD}}(w) \frac{\varepsilon^2}{3}}.
+\end{align*}
+\end{IEEEproof}
+
+This allows us to derive a trivial result about the number of ISD calls we need, to achieve a some confidence interval with a bounded trivial.
+
+\begin{theorem}[\textbf{Number of ISD calls for approximate counting}]\label{the:num_calls}
+Let us consider the considered estimator for weight $w$ and $m$ calls to ISD.
+Then, to achieve a relative error not greater than a constant $\varepsilon \geq 0$ with probability at least $1-\zeta$, with $\zeta\geq 0$ and constant, we need
+$$m\geq \frac{3}{\varepsilon^2 p_{\mathsf{ISD}}(w) }\ln(1/\zeta).$$
+\end{theorem}
+Interestingly, we can also derive the number of ISD calls we need, in order to derive an exact estimate for $N_{\mathscr C}(w)$.
+To this end, consider the following theorem.
+\begin{theorem}[\textbf{Number of ISD calls for exact counting}]
+Let us consider the estimator in Algorithm \ref{alg:newApproach}, for weight $w$ and $m$ calls to ISD.
+Then to have that $\left\lfloor N^*_{\mathscr C}(w)\right\rceil$ is equal to $N_{\mathscr C}(w)$ with probability at least $1-\zeta$ (with $\zeta\geq 0$ and constant), we need
+$$m\geq \frac{12\ln(1/\zeta) }{p_{\mathsf{ISD}}(w)}N_{\mathscr C}^2(w).$$
+\end{theorem}
+\begin{IEEEproof}
+We observe that $\left\lfloor N_{\mathscr C}^*(w)\right\rceil = N_{\mathscr C}(w)$ if
+$$N_{\mathscr C}(w) - \frac{1}{2}\leq N_{\mathscr C}^*(w)\leq N_{\mathscr C}(w) + \frac{1}{2}.$$
+Since we are expressing the maximum error term, in absolute terms, as $\pm \varepsilon N_{\mathscr C}(w)$, we set 
+$$\varepsilon = \frac{1}{2}  N_c(w).$$
+Substituting this into the value resulting from Theorem \ref{the:num_calls}, we obtain the thesis.
+\end{IEEEproof}
+Putting everything together, and considering the running time of ISD algorithms, we can derive the resulting time complexity for our estimator, as a function of only i) the desired error term, ii) the confidence in the estimate, and iii) the performances of the considered ISD algorithm.
+Interestingly, we can derive also a 
+\begin{proposition}\textbf{Overall cost}\\
+Our estimator using a ISD subroutine with cost $t_{\mathsf{ISD}}(w)$, on input $w$ and desiring a confidence interval $\varepsilon \geq 0$, has average time complexity
+$$m\cdot t_{\mathsf{ISD}}(w) = \frac{3\ln(1/\zeta)}{\epsilon^2}\cdot\frac{t_{\mathsf{ISD}}(w)}{p_{\mathsf{ISD}}(w)}.$$
+%Regardless of the specific ISD variant (e.g., for any algorithm operating as in Algorithm \ref{alg:isd_general}), the above is lower bounded by $$\frac{3\ln(1/\zeta)}{\epsilon^2}N_{\mathscr C}(w).$$
+%If both $\zeta$ and $\epsilon$ are constant, then the lower bound is in $O\big(N_{\mathscr C}(w)\big)$.
+\end{proposition}
+
+\subsection{The cost with   Lee\&Brickell and Stern's algorithms}
+
+Considering Lee\&Brickell ISD, we get.
+\begin{proposition}\textbf{Overall cost using Lee\&Brickell's ISD}\\
+Our estimator using Lee\&Brickell's ISD as subroutine takes cost
+$$\frac{3\ln(1/\zeta)}{\epsilon^2}\cdot \frac{\binom{n}{w}(q-1)^p}{\binom{n-k}{w-p}}.$$
+\end{proposition}
+\begin{IEEEproof}
+ We consider that $$t_{\mathsf{ISD}} = \frac{n(n-k-ell)^2}{p_{\mathsf{inv}(\ell)}}+t_{\mathsf{Solve}}.$$
+ Remember that we need to choose $p$ so that the ratio $\frac{t_{\mathsf{ISD}}}{p_{\mathsf{ISD}}}$ is minimized.
+ Since $t_{\mathsf{ISD}}$ is always at least $t_{\mathsf{PGE}} = \frac{n(n-k+\ell)^2}{p_{\mathsf{inv}}}$, and $p_{\mathsf{ISD}}$ increases with $p$ (\textcolor{blue}{[capire se vale per ogni $w$]}, the optimum will be reached with values $p\geq p^*$, where $p^*$ is such that $t_{\mathsf{Solve}}\approx t_{\mathsf{PGE}}$.
+ So, we have that the numerator is $\geq 2 t_{\mathsf{Solve}} = O\left(t_{\mathsf{Solve}}\right)$.
+ Considering the expressions for $t_{\mathsf{Solve}}$ and $p_{\mathsf{ISD}}$ and doing some simple algebraic manipulations, we obtain the formula in the thesis.
+\end{IEEEproof}
+We can derive analogous results for Stern's ISD.
+\begin{proposition}\textbf{Overall cost using Stern's ISD}\\
+Our estimator using Stern's ISD as subroutine takes cost
+$$t\cdot t_{\mathsf{ISD}}(w) = \frac{3\ln(1/\zeta)}{\epsilon^2}\cdot\frac{t_{\mathsf{ISD}}(w)}{p_{\mathsf{ISD}}(w)}.$$
+\end{proposition}
+\begin{IEEEproof}
+We first rewrite the success probability as
+$$p_{\mathsf{ISD}}(w) = \frac{\binom{n}{w}(q-1)^{2p}}{\binom{n-k-\ell}{w-2p}L^2}.$$
+Consider that $t_{\mathsf{Solve}} = 2L+L^2q^{-\ell}$, so that
+\begin{align*}
+p_{\mathsf{ISD}}(w)t_{\mathsf{Solve}} &\nonumber = \frac{\binom{n}{w}(q-1)^{2p}}{\binom{n-k-\ell}{w-2p}L}\big(2+Lq^{-\ell}\big).
+\end{align*}
+\textcolor{blue}{[TO BE COMPLETED]}
+\end{IEEEproof}
+
+To consider some examples, we consider the complexities on some example parameters.
+\textcolor{blue}{[Include figures with comparison between Stern and Lee Brickell, for random codes.]}

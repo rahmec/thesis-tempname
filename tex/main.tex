@@ -1,0 +1,36 @@
+\documentclass[letter]{IEEEtran}
+\input{macro}
+
+\begin{document}
+\input{title}
+    
+\IEEEpeerreviewmaketitle
+    
+\section{Introduction}
+\input{intro}
+
+\section{Notation and background}
+\input{notation}
+        
+\section{Information Set Decoding Algorithms: a general model}
+\input{isd}
+
+\section{LDPC ensemble}
+\input{ldpc_ensemble}
+
+
+%\section{Improving Stern's ISD for high weights}\input{new_stern}
+
+%\section{Tweaking ISD to find all codewords with weight $w$}\input{tweak}
+
+\bibliographystyle{IEEEtranS}
+\bibliography{References.bib}
+
+\section*{Appendix A: Lee \& Brickell ISD}
+\input{lb}
+
+\section*{Appendix B: Stern' ISD}
+\input{stern}
+
+\end{document}
+

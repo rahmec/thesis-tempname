@@ -1,0 +1,17 @@
+\begin{tikzpicture}[line/.style={>=latex}] 
+\coordinate (V1) at (1, 1.3);
+\coordinate (V2) at (-1.6, 0.4);
+\coordinate (V3) at ($(V1) + (V2)$);
+\coordinate (V4) at ($1.4*(V1)$);
+
+\draw[step=10pt, color=black!10] (-2, -1) grid (2, 2);
+\draw[<->, line] (-2, 0) -- node [below, very near end] {$x$} (2, 0);
+\draw[<->, line] (0, -1) -- node [right, very near start] {$y$} (0, 2);
+\draw[->, line, color=orange, thick] (0, 0) -- node [right=2pt, near end]    {$\vec{u}$} (V4);
+\draw[->, line, color=blue, thick, densely dashed] (0, 0) -- node [right=2pt] {$\vec{v}$} (V1);
+
+\draw[->, line, color=red, thick] (0, 0) -- node [above] {$\vec{w}$} (V2);
+\draw[->, line, color=red, densely dotted] (V1) -- +(V2);
+\draw[->, line, color=blue, densely dotted] (V2) -- +(V1);
+\draw[->, line, color=green!70!black, thick] (0, 0) -- node [left] {$\vec{z}$} (V3);
+\end{tikzpicture}

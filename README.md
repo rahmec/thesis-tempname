@@ -43,6 +43,3 @@ I'm planning on building my own class. Still making my mind up about it.
 
 Currently contained references:
 
--
-
-

@@ -11,6 +11,10 @@ The repo follows the following structure:
 
 ## H-generation
 
+- neal: fixed column weight ldpc generation as in [this reference](https://arun-10.tripod.com/ldpc/generate.html)
+- populate\_columns: initial idea for fixed column weight H generation
+- populate\_both: initial idea for fixed column and row weight H generation
+
 ## Isds
 
 Some comments on the files contained in isds directory:
@@ -28,11 +32,10 @@ Some comments on the files contained in isds directory:
 
 Some comments on the files contained in isds directory:
 
-- costs_idea: comparison for fixed column weight
-- isd_improvement:
-- min_distance:
-- Stern_small_subcodes_setting:
-- Stern_small_subcodes_setting_approx:
+- costs\_idea: algorithm cost comparison for fixed column weight
+- min\_distance: comparison of minimum distances considering different ns and rates
+- Stern\_small\_subcodes\_setting: sparse stern and stern algorithm cost comparison and parameter estimaiton
+- Stern\_small\_subcodes\_setting\_approx: just as above, but with ammortized lists and approximied binomials
 
 ## Tex
 

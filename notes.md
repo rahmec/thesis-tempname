@@ -95,3 +95,7 @@ g
 
 
 CONTA TUTTO ...
+
+Vedi:
+
+Vedi modern ISD (miglioramenti tipicamente trascusrabili, gli unici MMT e PJMM (acronimi autori), piccolo improvment, ma occupano un sacco di spazio. Trascurabili perche difficilmente implementabili piu MEGA DIFFICILI DA ANALIZZARE, per il momento da non fare)

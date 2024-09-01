@@ -197,40 +197,45 @@ def sparseStern(H2):
 	B2 = B[:, k+l-z:]
 	C = H2[-(r-l):, :k+l]
 	
-	p1 = ceil(z1/5)
-	p2 = ceil(k+l-z/5)
+	p1 = ceil(z1/50)
+	p2 = ceil((k+l-z)/50)
 	p = p1 + p2
-	logging.debug(f"Enumerating {z1} pick {p1}")
-	X11 = enum_vec_w_p(z1,p1)
-	logging.debug("Enumerated x11")
-	if z % 2 == 0:
-		X12 = X11.copy()
-	else:
-		logging.debug(f"Enumerating {z2} pick {p1}")
-		X12 = enum_vec_w_p(z2,p1)
+	combs11 = combinations(range(z1),p1)
+	combs12 = combinations(range(z2),p1)
+	combs21 = combinations(range(k+l-z),p2)
 	
 	logging.debug("Starting collision search")
-	for x11 in X11:
-		for x12 in X12:
+	for comb11 in combs11:
+		x11 = vector(GF(2),z1)
+		for j in comb11:
+			x11[j] = 1
+		for comb12 in combs12:
+			x12 = vector(GF(2),z2)
+			for j in comb12:
+				x12[j] = 1
 			if x11*A1.T == -x12*A2.T:
-				logging.debug("Found collision list 1")
-				for comb2 in combinations(range(k+l-z),p2):
+				#logging.debug("Found collision list 1")
+				for comb2 in combs21:
 					x21 = vector(GF(2), k+l-z)
 					for j in comb2:
 						x21[j] = 1
 					x22 = vector(GF(2), list(x11) + list(x12))
-					if x21*B1.T == -x22.B2.T:
+					#print(x22)
+					#print(x11)
+					#print(x12)
+					#print(x21)
+					if x21*B1.T == -x22*B2.T:
 						logging.debug("Found collision list 2")
 						x31 = vector(GF(2), list(x21) + list(x22))
 						x32 = -x31 * C.T
 						return vector(GF(2), list(x31) + list(x32))
 	
 
-l1 = 7
-l2 = 5
+l1 = 5
+l2 = 7
 l = l1 + l2
 rate = 2/3
-n = 100
+n = 1000
 k = ceil(n * rate)
 r = n-k
 #p1=10
@@ -288,3 +293,4 @@ else:
 	print(f"Codeword: {c}")
 	print(f"Weight: {c.hamming_weight()}")
 	print(f"Parity: {c*Rinv*M.T}")
+	print(f"z: {z}, u: {k+l-z}, l1: {l1}, l2: {l2}")
